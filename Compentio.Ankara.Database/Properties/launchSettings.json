@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Comepntio.Ankara.Database": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

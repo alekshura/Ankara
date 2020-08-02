@@ -1,0 +1,43 @@
+version: '3.4'
+
+services:
+  compentio.Ankara.api:
+    image: ${DOCKER_REGISTRY-}compentio.Ankara.api:${TAG:-latest}
+    container_name: ankara-api
+    build:
+      context: .
+      dockerfile: Compentio.Ankara.Api/Dockerfile
+    depends_on:
+     - compentio.Ankara.database
+    networks:
+     - ankara
+
+  compentio.Ankara.database.init:
+    image: ${DOCKER_REGISTRY-}compentio.Ankara.database:${TAG:-latest}
+    container_name: ankara-db-init
+    build:
+      context: .
+      dockerfile: Compentio.Ankara.Database/Dockerfile
+    depends_on:
+     - compentio.Ankara.database
+    networks:
+     - ankara
+
+  compentio.Ankara.database:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    container_name: ankara-db
+    command: /bin/bash ./entrypoint.sh
+    networks:
+      - ankara
+    volumes:
+      - dbdata:/var/opt/mssql/data
+      - ./Compentio.Ankara.Database/CreateDatabase/docker-entrypoint.sh:/entrypoint.sh
+      - ./Compentio.Ankara.Database/CreateDatabase/docker-db-init.sh:/db-init.sh
+      - ./Compentio.Ankara.database/CreateDatabase/ankara-db-init.sql:/ankara-db-init.sql
+
+volumes:
+  dbdata:
+
+networks:
+  ankara:
+    external: true
