@@ -29,13 +29,15 @@ In this way you are starting 3 containers:
  - ankara-db
  
 `ankara-api` is Web API container, that serves Web API;
-`ankara-db-init` - container for Database initialization. It depends on `ankara-db` - we've used MS SQL Server 2017 Image 
-(mcr.microsoft.com/mssql/server:2017-latest). 
+`ankara-db-init` - container for Database initialization. 
+It depends on `ankara-db` - we've used MS SQL Server 2017 Image (mcr.microsoft.com/mssql/server:2017-latest). 
 
 All work for creating databases done in `docker-entrypoint.sh`, which starts MS SQL server and executes script from `ankara-db-init.sql` using
 `/db-init.sh & /opt/mssql/bin/sqlservr`. 
 
 In such a way `ankara-db-init` starts MS SQL Server, creates the Datababase and users. The last of the job (Db schema, data, etc.) FluentMigator does.
-About FM please read here: https://fluentmigrator.github.io/articles/intro.html
+About FM please read here: https://fluentmigrator.github.io/articles/intro.html.
+
+After all migration have been done, ankara-db-init stops his work. 
 
 Job's done. You have you database, you can create more databses in `ankara-db-init.sql`.
