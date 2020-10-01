@@ -12,9 +12,6 @@
     public enum Roles
     {
         Manager = 1,
-        HRBP,
-        Observer,
-        Reporter,
         TechAdmin,
         BusinessAdmin
     }

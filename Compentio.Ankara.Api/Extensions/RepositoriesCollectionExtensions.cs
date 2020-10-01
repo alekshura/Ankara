@@ -15,8 +15,17 @@
                 return CreateConnectionFactory(configuration);
             });
 
+            services.AddDistributedSqlServerCache(options =>
+            {
+                options.ConnectionString = configuration.GetConnectionString("Ankara");
+                options.SchemaName = "app";
+                options.TableName = "Cache";
+            });
+
             // Register here your repositories
             services.AddSingleton<IUsersRepository, UsersRepository>();
+            services.AddSingleton<IMaintenanceRepository, MaintenanceRepository>();
+            services.AddSingleton<ISessionRepository, SessionRepository>();
         }
 
         private static DbProviderConnectionFactory CreateConnectionFactory(IConfiguration configuration)

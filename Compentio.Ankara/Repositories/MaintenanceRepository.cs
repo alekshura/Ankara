@@ -9,19 +9,22 @@
 
     public interface IMaintenanceRepository
     {
-        Task AddLogBuffer(IEnumerable<LogEntry> logBuffer, string userLogin);
-
+        Task AddLogBuffer(IEnumerable<LogEntry> logBuffer);
+        Task<DatabaseVersionInfo> GetDatabaseVersion();
     }
+
     public class MaintenanceRepository : IMaintenanceRepository
     {
         private readonly IAdoConnectionFactory _connectionFactory;
+        private readonly ICurrentUserContext _userContext;
 
-        public MaintenanceRepository(IAdoConnectionFactory connectionFactory)
+        public MaintenanceRepository(IAdoConnectionFactory connectionFactory, ICurrentUserContext userContext)
         {
+            _userContext = userContext;
             _connectionFactory = connectionFactory;
         }
 
-        public async Task AddLogBuffer(IEnumerable<LogEntry> logBuffer, string userLogin)
+        public async Task AddLogBuffer(IEnumerable<LogEntry> logBuffer)
         {
             using TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             using var connection = _connectionFactory.CreateConnection();
@@ -50,16 +53,28 @@
                 {
                     Severity = logEntry.Severity.ToUpper(),
                     logEntry.Message,
-                    Logger = !string.IsNullOrWhiteSpace(logEntry.Logger) ? logEntry.Logger : "Compentio.Ankara.Angular",
+                    Logger = !string.IsNullOrWhiteSpace(logEntry.Logger) ? logEntry.Logger : "Angular.Gui",
                     logEntry.ExceptionMessage,
                     logEntry.Timestamp,
                     logEntry.ExceptionType,
-                    SourceName = "Compentio.Ankara.Gui",
-                    userLogin
+                    SourceName = "Angular.Gui",
+                    userLogin = _userContext.CurrentUser.Login
                 });
             }
 
             scope.Complete();
+        }
+        public async Task<DatabaseVersionInfo> GetDatabaseVersion()
+        {
+            using var connection = _connectionFactory.CreateConnection();
+            var query = @"SELECT TOP(1) [Version]
+                              ,[AppliedOn]
+                              ,[Description]
+                          FROM [dbo].[VersionInfo]
+                          ORDER BY AppliedOn DESC";
+
+            var result = await connection.QuerySingleAsync<DatabaseVersionInfo>(query).ConfigureAwait(false);
+            return result;
         }
     }
 }

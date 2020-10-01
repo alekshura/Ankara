@@ -13,7 +13,8 @@
             services.AddTransient<IAuthorizationService, AuthorizationService>();
             services.AddTransient<ICurrentUserContext, CurrentUserContext>();            
             services.AddTransient<IUsersService, UsersService>();
-            services.AddTransient<IMaintenanceService, MaintenanceService>();           
+            services.AddTransient<IMaintenanceService, MaintenanceService>();
+            services.AddTransient<ISessionService, SessionService>();
         }
     }
 }

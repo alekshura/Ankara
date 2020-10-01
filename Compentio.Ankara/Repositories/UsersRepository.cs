@@ -19,6 +19,7 @@
         Task AddUser(User user, string userLogin);
         Task RemoveUser(long userId, string userLogin);
         Task ModifyUser(User user, string userLogin);
+        Task<IEnumerable<User>> Logon(string login);
     }
 
     public class UsersRepository : IUsersRepository
@@ -150,6 +151,42 @@
             }
 
             return Option<User>.None;
+        }
+        public async Task<IEnumerable<User>> Logon(string login)
+        {
+            using var connection = _connectionFactory.CreateConnection();
+
+            // Here asume, that query is per DB structure of yours Tables/Views, etc. 
+            var query = @$"SELECT * FROM [users].vw_Users WHERE UserLogin = @login";
+
+            var users = await connection.QueryAsync<User, IEnumerable<UserRole>, Department, User>(query, (user, roles, department) =>
+            {
+                if (roles?.Any() != true)
+                {
+                    user.Roles = new UserRole[]
+                    {
+                        new UserRole(){ Role = Roles.Manager }
+                    };
+                }
+                else
+                {
+                    user.Roles = roles;
+                }
+
+                user.Department = department;
+                return user;
+            },
+            new { login }, splitOn: "Roles, Id, Name").ConfigureAwait(false);
+
+            _logger.Info($"GetUser: '{login}'. Records returned: {users.Count()}.");
+
+            if (users.Any())
+            {
+                return users;
+            }
+
+            _logger.Warn($"User '{login}' logon failed. Database Logon query: '{query.Replace("@login", login)}'");
+            return null;
         }
     }
 }

@@ -11,6 +11,18 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:Compentio.Ankara.Controllers.AuthorizationController.Logout">
+            <summary>
+            Method used for user logout from current session
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Compentio.Ankara.Controllers.SessionController.HasActiveSession">
+            <summary>
+            Method indicates when there is active user session. In a case of actove session returns Http Forbidden Status Code: 403.  
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Compentio.Ankara.Controllers.UsersController.GetUsers(System.Collections.Generic.IEnumerable{System.Int64},System.Nullable{System.Boolean})">
             <summary>
             Method returns Users from Database for list of departments.
@@ -39,6 +51,24 @@
             Add user to the application
             </summary>
             <param name="user"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Compentio.Ankara.Api.Controllers.MaintenanceController.AddLogBuffer(System.Collections.Generic.IEnumerable{Compentio.Ankara.Models.Maintenance.LogEntry})">
+            <summary>
+            Method adds logs to the logs table. It is used by Frontend application.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Compentio.Ankara.Api.Controllers.MaintenanceController.GetVersion">
+            <summary>
+            Method returns application versions: Database actual version and assembly version.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Compentio.Ankara.Api.Controllers.MaintenanceController.Get">
+            <summary>
+            Methods shows API health condition.
+            </summary>
             <returns></returns>
         </member>
     </members>

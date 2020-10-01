@@ -1,5 +1,6 @@
 ﻿namespace Compentio.Ankara.Controllers
 {
+    using System.Linq;
     using System.Threading.Tasks;
     using Compentio.Ankara.Models.Users;
     using Microsoft.AspNetCore.Authorization;
@@ -27,21 +28,27 @@
         [ProducesResponseType(typeof(User), 200)]
         public async Task<IActionResult> Logon()
         {
-            var result = await _authorizationService.Logon(User.Identity.Name).ConfigureAwait(false);
+            var login = User.Identity.Name.Split('\\').Last();
+
+            var result = await _authorizationService.Logon(login).ConfigureAwait(false);
 
            if (result == null)
            {
                 return Forbid();
            }
 
-           return Ok(result);
+           return Ok(result.User);
         }
-
+        /// <summary>
+        /// Method used for user logout from current session
+        /// </summary>
+        /// <returns></returns>
         [HttpPost("logout")]
         [ProducesResponseType(typeof(IActionResult), 200)]
         public async Task<IActionResult> Logout()
         {
-            await _authorizationService.Logout().ConfigureAwait(false);
+            var login = User.Identity.Name.Split('\\').Last();
+            await _authorizationService.Logout(login).ConfigureAwait(false);
             return Ok();
         }
     }

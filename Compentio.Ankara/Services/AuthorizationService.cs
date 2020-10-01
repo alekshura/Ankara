@@ -2,40 +2,42 @@
 {
     using Compentio.Ankara.Models.Users;
     using Compentio.Ankara.Repositories;
+    using System.Linq;
     using System.Threading.Tasks;
 
     public interface IAuthorizationService
     {
-        Task<User> Logon(string userName);
-        Task Logout();
+        Task<AuthorizationResult> Logon(string userLogin);
+        Task Logout(string userLogin);
 
     }
     public class AuthorizationService : IAuthorizationService
     {
         private readonly IUsersRepository _usersRepository;
-        private readonly ICurrentUserContext _userContext;
+        private readonly ISessionService _sessionService;
 
-        public AuthorizationService(IUsersRepository usersRepository, ICurrentUserContext userContext)
+        public AuthorizationService(IUsersRepository usersRepository, ISessionService sessionService)
         {
             _usersRepository = usersRepository;
-            _userContext = userContext;
+            _sessionService = sessionService;
         }
-        public async Task<User> Logon(string userLogin)
-        {
-            var result = await _usersRepository.GetUser(userLogin).ConfigureAwait(false);
 
-            return result.Match(
-                Some: user =>
-                {
-                    _userContext.SetCurrentUser(user);
-                    return user;
-                },
-                None: () => null);
-        }
-        public async Task Logout()
+        public async Task<AuthorizationResult> Logon(string userLogin)
         {
-            _userContext.Clear();
-            await Task.CompletedTask;
+            var result = await _usersRepository.Logon(userLogin).ConfigureAwait(false);
+
+            if (result != null)
+            {
+                await _sessionService.StartSession(result.FirstOrDefault()).ConfigureAwait(false);
+                return new AuthorizationResult(result, true);
+            }
+
+            return new AuthorizationResult(false);
+        }
+
+        public async Task Logout(string userLogin)
+        {
+            await _sessionService.EndSession(userLogin).ConfigureAwait(false);
         }
     }
 }

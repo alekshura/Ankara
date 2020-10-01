@@ -9,7 +9,7 @@ The main docker compose file is in root directory of a repository.
 Firs one has to create local network:
 
 ```
-docker network create retager
+docker network create Ankara
 ```
 To start Backend using `docker-compose` (see more: https://docs.docker.com/compose/) command:
 
@@ -41,3 +41,18 @@ About FM please read here: https://fluentmigrator.github.io/articles/intro.html.
 After all migration have been done, ankara-db-init stops his work. 
 
 Job's done. You have you database, you can create more databses in `ankara-db-init.sql`.
+
+##IIS Express Windows Authentications
+
+In a path `$(solutionDir)\.vs\{projectName}\config\applicationhost.config` change section `windowsAuthentication` and `anonymousAuthentication` for `overrideModeDefault="Allow"`:
+
+```
+<sectionGroup name="authentication">
+    <section name="anonymousAuthentication" overrideModeDefault="Allow" />
+    <section name="basicAuthentication" overrideModeDefault="Deny" />
+    <section name="clientCertificateMappingAuthentication" overrideModeDefault="Deny" />
+    <section name="digestAuthentication" overrideModeDefault="Deny" />
+    <section name="iisClientCertificateMappingAuthentication" overrideModeDefault="Deny" />
+    <section name="windowsAuthentication" overrideModeDefault="Allow" />
+</sectionGroup>
+```
