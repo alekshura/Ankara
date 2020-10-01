@@ -3,6 +3,8 @@
     using Compentio.Ankara.Database.Extensions;
     using FluentMigrator;
     using NLog;
+    using System;
+    using static Compentio.Ankara.Database.Extensions.TableExtensions;
 
     [Migration(2020_01_01_1000)]
     public class InitialMigration : Migration
@@ -13,56 +15,58 @@
         {
             logger.Info("Start initial migration");
 
-            if (!Schema.Schema(Database.Schema.Name).Exists())
+            if (!Schema.AppSchemaExists())
             {
-                Create.Schema(Database.Schema.Name);
+                Create.AppSchema();
             }
 
-            if (!Schema.Schema(Database.Schema.Name).Table(Database.Schema.Tables.Dictionaries).Exists())
+            if (!Schema.AppSchema().AppTableExists(TableNames.Cache))
             {
-                Create.Table(Database.Schema.Tables.Dictionaries).InSchema(Database.Schema.Name)
+                Create.AppTable(TableNames.Cache)
+                    .WithColumn("Id").AsString(449).NotNullable().PrimaryKey()
+                    .WithColumn("Value").AsMaxVarBinary().NotNullable()
+                    .WithColumn("ExpiresAtTime").AsDateTimeOffset(7).NotNullable()
+                    .WithColumn("SlidingExpirationInSeconds").AsInt64().Nullable()
+                    .WithColumn("AbsoluteExpiration").AsDateTimeOffset(7).Nullable();
+            }
+
+            if (!Schema.AppSchema().AppTableExists(TableNames.Logs))
+            {
+                Create.AppTable(TableNames.Logs)
                     .WithIdentityColumn()
-                    .WithColumn("CategoryId").AsInt64()
-                    .WithColumn("Value").AsString()
-                    .WithColumn("DepartmentsJson").AsMaxString()
-                    .WithActiveColumn()
-                    .WithAuditColumns();
+                    .WithColumn("Severity").AsString()
+                    .WithColumn("Message").AsMaxString()
+                    .WithColumn("Timestamp").AsDateTime().Indexed()
+                    .WithColumn("Logger").AsString()
+                    .WithColumn("ExceptionType").AsString().Nullable()
+                    .WithColumn("ExceptionMessage").AsMaxString().Nullable()
+                    .WithColumn("UserLogin").AsString().Nullable()
+                    .WithColumn("SourceName").AsString();
             }
 
-            if (!Schema.Schema(Database.Schema.Name).Table(Database.Schema.Tables.Logs).Exists())
+            if (!Schema.AppSchema().AppTableExists(TableNames.Users))
             {
-                Create.Table(Database.Schema.Tables.Logs).InSchema(Database.Schema.Name)
-                .WithIdentityColumn()
-                .WithColumn("Severity").AsString()
-                .WithColumn("Message").AsMaxString()
-                .WithColumn("Timestamp").AsDateTime().Indexed()
-                .WithColumn("Logger").AsString()
-                .WithColumn("ExceptionType").AsString().Nullable()
-                .WithColumn("ExceptionMessage").AsMaxString().Nullable()
-                .WithColumn("UserLogin").AsString().Nullable()
-                .WithColumn("SourceName").AsString();
+                Create.AppTable(TableNames.Users)
+                   .WithIdentityColumn()
+                   .WithColumn("UserId").AsInt64().Indexed()
+                   .WithColumn("Roles").AsMaxString().WithDefaultValue("")
+                   .WithPeriodColumns()
+                   .WithActiveColumn()
+                   .WithAuditColumns();
             }
 
-            if (!Schema.Schema(Database.Schema.Name).Table(Database.Schema.Tables.Params).Exists())
+            if (!Schema.AppSchema().AppTableExists(TableNames.UsersSession))
             {
-                Create.Table(Database.Schema.Tables.Params).InSchema(Database.Schema.Name)
-                .WithIdentityColumn()
-                .WithColumn("Name").AsString()
-                .WithColumn("Value").AsString()
-                .WithColumn("Description").AsString()
-                .WithAuditColumns();
+                Create.AppTable(TableNames.UsersSession)
+                  .WithColumn("SessionKey").AsString(449).NotNullable().PrimaryKey()
+                  .WithColumn("SessionId").AsString().NotNullable()
+                  .WithColumn("Login").AsString().NotNullable()
+                  .WithColumn("UserId").AsInt64().NotNullable().Indexed()
+                  .WithColumn("TimeStamp").AsDateTimeOffset(7).NotNullable().WithDefaultValue(DateTimeOffset.UtcNow);
             }
 
-            if (!Schema.Schema(Database.Schema.Name).Table(Database.Schema.Tables.Users).Exists())
-            {
-                Create.Table(Database.Schema.Tables.Users).InSchema(Database.Schema.Name)
-               .WithIdentityColumn()
-               .WithColumn("UserId").AsInt64().Indexed()
-               .WithColumn("Roles").AsMaxString().WithDefaultValue("")
-               .WithPeriodColumns()
-               .WithActiveColumn()
-               .WithAuditColumns();
-            }           
+
+            Execute.AppScript("./Scripts/Example.sql");
 
             logger.Info("Initial migration completed");
         }
@@ -71,11 +75,10 @@
         {
             logger.Warn("Initial migration rollback.");
 
-            Delete.Schema(Database.Schema.Name);
-            Delete.Table(Database.Schema.Tables.Dictionaries);
-            Delete.Table(Database.Schema.Tables.Logs);
-            Delete.Table(Database.Schema.Tables.Params);
-            Delete.Table(Database.Schema.Tables.Users);
+            Delete.AppSchema();
+
+            Delete.Table(TableNames.Logs);
+            Delete.Table(TableNames.Users);
         }
-    }  
+    }
 }
