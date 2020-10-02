@@ -42,7 +42,7 @@ After all migration have been done, ankara-db-init stops his work.
 
 Job's done. You have you database, you can create more databses in `ankara-db-init.sql`.
 
-## IIS Express Windows Authentications
+## IIS Express Windows Authentication
 
 In a path `$(solutionDir)\.vs\{projectName}\config\applicationhost.config` change section `windowsAuthentication` and `anonymousAuthentication` for `overrideModeDefault="Allow"`:
 
