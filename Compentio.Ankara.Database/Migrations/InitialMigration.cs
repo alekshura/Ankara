@@ -79,6 +79,8 @@
 
             Delete.Table(TableNames.Logs);
             Delete.Table(TableNames.Users);
+            Delete.Table(TableNames.UsersSession);
+            Delete.Table(TableNames.Cache);
         }
     }
 }
