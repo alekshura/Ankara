@@ -14,11 +14,13 @@
                 throw new ArgumentNullException(nameof(configuration));
             }
 
+            services.AddMemoryCache();
+
             services.Configure<ClientRateLimitOptions>(configuration.GetSection("ClientRateLimiting"));
             services.Configure<ClientRateLimitPolicies>(configuration.GetSection("ClientRateLimitPolicies"));
 
-            services.AddSingleton<IClientPolicyStore, DistributedCacheClientPolicyStore>();
-            services.AddSingleton<IRateLimitCounterStore, DistributedCacheRateLimitCounterStore>();
+            services.AddInMemoryRateLimiting();
+
             services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
         }
     }
