@@ -1,6 +1,5 @@
 namespace Compentio.Ankara
 {
-    using System;
     using Compentio.Ankara.Api.Extensions;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -10,7 +9,6 @@ namespace Compentio.Ankara
     using Newtonsoft.Json.Converters;
     using Compentio.Ankara.Api.Providers;
     using Compentio.Ankara.Api.Filters;
-    using Compentio.Ankara.Api.Extensions;
     using Compentio.Ankara.Api.Middleware;
     using AspNetCoreRateLimit;
 
