@@ -11,7 +11,7 @@
     using Microsoft.Extensions.CommandLineUtils;
     using FluentMigrator.Runner.Logging;
 
-    class Program
+    internal static class Program
     {
         public static IConfigurationRoot Configuration { private set; get; }
         public static bool PreviewOnly { private set; get; } = false;
@@ -20,7 +20,7 @@
 
         static void Main(string[] args)
         {
-            CommandLineApplication commandLineApplication = new CommandLineApplication(throwOnUnexpectedArg: false);
+            var commandLineApplication = new CommandLineApplication(throwOnUnexpectedArg: false);
             var previewOption = commandLineApplication.Option(
               "-$|-s |--script <fineName>", "Generate Sql database scripts but do not execute it on the database.", CommandOptionType.SingleValue);
             var unappliedOption = commandLineApplication.Option(
@@ -107,7 +107,7 @@
                                         opt.OutputGoBetweenStatements = true;
                                         opt.ShowSql = true;
                                     });
-                            };
+                            }
                         })
 
                 .BuildServiceProvider(false);
