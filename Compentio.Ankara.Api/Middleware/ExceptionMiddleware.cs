@@ -15,7 +15,7 @@
     {
         private readonly RequestDelegate _next;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private static readonly ConcurrentDictionary<Type, Func<Exception, HttpContext, Task>> Handlers = new ConcurrentDictionary<Type, Func<Exception, HttpContext, Task>>();
+        private static readonly ConcurrentDictionary<Type, Func<Exception, HttpContext, Task>> Handlers = new();
 
         public ExceptionMiddleware(RequestDelegate next)
         {
