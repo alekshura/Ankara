@@ -86,7 +86,7 @@
         {
             context.Response.StatusCode = statusCode;
             context.Response.ContentType = "application/json";
-            var content = result != null ? JsonConvert.SerializeObject(result) : String.Empty;
+            var content = result != null ? JsonConvert.SerializeObject(result) : string.Empty;
             await context.Response.WriteAsync(content).ConfigureAwait(false);
         }
     }
