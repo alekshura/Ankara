@@ -40,7 +40,7 @@
             }
         }
 
-        // TODO Write aour custom exception and declare here
+        // TODO Write your custom exception and declare here
         //public static async Task Handle(Exception exception, HttpContext context)
         //{
         //    var result = new NonSuccessResult(NonSuccessResultCode.AddonWrongVersion, new string[0]);
