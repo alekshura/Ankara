@@ -1,7 +1,7 @@
 # Ankara
 This is Web API of example Ankara application. 
 The overall idea is to show how we have used MS SQL Server Docker Image in development process. 
-It is also more convenient to use contenirised database, create databases, users, schemas, load data using one command. 
+It is also more convenient to use contenerised database, create databases, users, schemas, load data using one command. 
 This job can be done using one Docker container `db-init`.
 
 ## Start
