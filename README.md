@@ -38,7 +38,7 @@ All work for creating databases done in `docker-entrypoint.sh`, which starts MS 
 In such a way `ankara-db-init` starts MS SQL Server, creates the Datababase and users. The last of the job (Db schema, data, etc.) FluentMigator does.
 About FM please read here: https://fluentmigrator.github.io/articles/intro.html.
 
-After all migration have been done, ankara-db-init stops his work. 
+After all migrations have been done, ankara-db-init stops its work. 
 
 Job's done. You have you database, you can create more databses in `ankara-db-init.sql`.
 
